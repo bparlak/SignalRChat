@@ -1,0 +1,28 @@
+﻿@page
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="row">
+                <label class="col-3">User</label>
+                <input type="text" id="userInput" class="form-control col-6" />
+            </div>
+            <div class="row">
+                <label class="col-3">Message</label>
+                <input type="text" id="messageInput1" class="form-control col-6" />
+                <input type="button" id="sendButton" value="Send Message" class="col-3 btn btn-primary" />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <hr />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <ul id="messagesList" class="list-group"></ul>
+        </div>
+    </div>
+</div>
+<script src="~/lib/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/chat.js"></script>
