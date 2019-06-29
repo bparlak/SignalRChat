@@ -2,12 +2,12 @@
 @{
     ViewData["Title"] = "ChatRooms";
 }
-    <h5>Welcome <label class="userName">@Model.Username</label></h5>
+<h5>Welcome <label class="userName">@Model.Username</label></h5>
 <div class="col-12 row chatRoom">
-    <div class="col-9 border">
+    <div class="col-9 border messageBody">
         <ul id="messagesList" class="list-group"></ul>
     </div>
-    <div class="col-3 border">
+    <div class="col-3 border chatRoomRight">
         <ol class="mt-2">
             @foreach (var item in Model.UserList)
             {
@@ -45,15 +45,30 @@
         var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
         connection.start();
         $("#sendMessage").on("click", function () {
-            var message = $("#textMessage").val();
-            var user = $(".userName").text();
-            connection.invoke("SendMessage",user, message);
+            sendMessages();
         });
         connection.on("ReceiveMessage", function (user, message) {
             $("#textMessage").val("");
+            var textcontent = user + ": " + message;
             var list = $("#messagesList");
-            list.append("<li>" + user + ": " + message+"</li>");
+            var li = document.createElement("li");
+            li.textContent = textcontent;
+            li.style = "list-style:none";
+            list.append(li);
         });
 
+
+        $('html').keydown(function (e) {
+            if (e.which == 13) {
+                sendMessages();
+            }
+        });
+        function sendMessages() {
+            var message = $("#textMessage").val();
+            var user = $(".userName").text();
+            connection.invoke("SendMessage", user, message);
+        }
+        var messageBody = document.querySelector('#messageBody');
+        messageBody.scrollTop = messageBody.scrollHeight - messageBody.clientHeight;
     });
 </script>
