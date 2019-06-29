@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SignalRChat.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace SignalRChat.Controllers
 {
@@ -14,7 +15,33 @@ namespace SignalRChat.Controllers
         {
             return View();
         }
-
+        public IActionResult Login()
+        {
+            return View();
+        }
+        [HttpPost]
+        public IActionResult Login(LoginViewModel model)
+        {
+            string userName = model.Username;
+            if (!String.IsNullOrEmpty(userName))
+            {
+                UserRepository.AddUser(userName);
+                return RedirectToAction("ChatRooms",new {userName});
+            }
+            return View(model);
+        }
+        [HttpGet]
+        public IActionResult ChatRooms(string userName)
+        {
+            if (String.IsNullOrEmpty(userName))
+            {
+                return RedirectToAction("Login");
+            }
+            ChatRoomsViewModel model = new ChatRoomsViewModel();
+            model.UserList = UserRepository.UserList;
+            model.Username = userName;
+            return View(model);
+        }
         public IActionResult Privacy()
         {
             return View();

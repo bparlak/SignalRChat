@@ -1,0 +1,59 @@
+﻿@model ChatRoomsViewModel
+@{
+    ViewData["Title"] = "ChatRooms";
+}
+    <h5>Welcome <label class="userName">@Model.Username</label></h5>
+<div class="col-12 row chatRoom">
+    <div class="col-9 border">
+        <ul id="messagesList" class="list-group"></ul>
+    </div>
+    <div class="col-3 border">
+        <ol class="mt-2">
+            @foreach (var item in Model.UserList)
+            {
+                <li class="">@item</li>
+            }
+        </ol>
+    </div>
+</div>
+<div class="col-12 row">
+    <div class="col-9 p-0">
+        <input class="col-12 form-control" type="text" name="textMessage" id="textMessage" placeholder="Write Your Message" value="" />
+    </div>
+    <div class="col-3 p-0">
+        <input class="col-12 btn btn-primary" type="button" id="sendMessage" name="sendMessage" value="Send" />
+    </div>
+</div>
+
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/signalr/dist/browser/signalr.js"></script>
+<script>
+    $(document).ready(function () {
+        //-----ekranda height değişmelerini istediğim gibi ayarlamak için yazdığım script
+        jQuery(window).bind("resize", function () {
+            var height = $(window).height();
+            height = height * 60 / 100;
+            $(".chatRoom").height(height);
+        });
+        var height = $(window).height();
+        height = height * 60 / 100;
+        $(".chatRoom").height(height);
+        //---------------------------------------------
+
+        var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+        connection.start();
+        $("#sendMessage").on("click", function () {
+            var message = $("#textMessage").val();
+            var user = $(".userName").text();
+            connection.invoke("SendMessage",user, message);
+        });
+        connection.on("ReceiveMessage", function (user, message) {
+            $("#textMessage").val("");
+            var list = $("#messagesList");
+            list.append("<li>" + user + ": " + message+"</li>");
+        });
+
+    });
+</script>
