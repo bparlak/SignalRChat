@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SignalRChat.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR;
+using SignalRChat.Hubs;
 
 namespace SignalRChat.Controllers
 {
@@ -25,7 +27,6 @@ namespace SignalRChat.Controllers
             string userName = model.Username;
             if (!String.IsNullOrEmpty(userName))
             {
-                UserRepository.AddUser(userName);
                 return RedirectToAction("ChatRooms",new {userName});
             }
             return View(model);
@@ -38,11 +39,10 @@ namespace SignalRChat.Controllers
                 return RedirectToAction("Login");
             }
             ChatRoomsViewModel model = new ChatRoomsViewModel();
-            model.UserList = UserRepository.UserList;
             model.Username = userName;
             return View(model);
         }
-        public IActionResult Privacy()
+            public IActionResult Privacy()
         {
             return View();
         }

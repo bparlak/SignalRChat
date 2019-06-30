@@ -10,18 +10,18 @@
         <h1 class="text-center text-uppercase">Login Chat</h1>
         <div class="row">
             <label class="col-4 mt-2">Username</label>
-            <input asp-for="Username" type="text" name="UserName" placeholder="Username" class="col-8 form-control" value="" />
+            <input asp-for="Username" type="text" name="UserName" id="userName" placeholder="Username" class="col-8 form-control" value="" />
         </div>
-        <div class="row">
-            <label class="col-4 mt-2">Password</label>
-            <input asp-for="Password" type="password" name="password" placeholder="Password" class="col-8 form-control" value="" />
-        </div>
-        <div class="row">
-            <label class="col-4 mt-2">Email(Optional)</label>
-            <input asp-for="Email" type="email" name="Email" placeholder="Email" class="col-8 form-control" value="" />
-        </div>
+        @*<div class="row">
+                <label class="col-4 mt-2">Password</label>
+                <input asp-for="Password" type="password" name="password" placeholder="Password" class="col-8 form-control" value="" />
+            </div>
+            <div class="row">
+                <label class="col-4 mt-2">Email(Optional)</label>
+                <input asp-for="Email" type="email" name="Email" placeholder="Email" class="col-8 form-control" value="" />
+            </div>*@
         <div class="mt-3 text-center">
-            <input type="submit" name="Login" class="col-8 btn btn-primary" value="Login" />
+            <input id="btnLogin" type="submit" name="Login" class="col-8 btn btn-primary" value="Login" />
         </div>
     </div>
 </form>

@@ -16,5 +16,9 @@ namespace SignalRChat.Models
         {
             UserList.Add(userName);
         }
+        public static void RemoveUser(string userName)
+        {
+            UserList.Remove(userName);
+        }
     }
 }

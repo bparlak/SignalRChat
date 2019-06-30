@@ -2,18 +2,13 @@
 @{
     ViewData["Title"] = "ChatRooms";
 }
-<h5>Welcome <label class="userName">@Model.Username</label></h5>
+<h5>Welcome <label asp-for="Username" class="userName">@Model.Username</label></h5>
 <div class="col-12 row chatRoom">
     <div class="col-9 border messageBody">
         <ul id="messagesList" class="list-group"></ul>
     </div>
     <div class="col-3 border chatRoomRight">
-        <ol class="mt-2">
-            @foreach (var item in Model.UserList)
-            {
-                <li class="">@item</li>
-            }
-        </ol>
+        <ol id="userList" class="mt-2"></ol>
     </div>
 </div>
 <div class="col-12 row">
@@ -30,7 +25,71 @@
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/signalr/dist/browser/signalr.js"></script>
 <script>
+
     $(document).ready(function () {
+
+        $(window).on("unload", function () {
+            StopConnection();
+        });
+        //--------SignalR Chat Methods
+        var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+
+        connection.start().then(function () {
+            StartConnection();
+        });
+
+        //connection.stop().then(function () {
+        //    StopConnection();
+        //});
+        connection.on("ReceiveMessageOthers", function (user, message) {
+            $("#textMessage").val("");
+            var textcontent = user + ": " + message;
+            DisplayMessage("messagesList", textcontent, "blue");
+        });
+        connection.on("ReceiveMessageCaller", function (message) {
+            $("#textMessage").val("");
+            DisplayMessage("messagesList", message, "green", "text-align:right;");
+        });
+        connection.on("SendGroup", function (message) {
+            DisplayMessage("messagesList", message, "red");
+        });
+        connection.on("GetUsers", function (users) {
+            $("#userList").empty();
+            for (var i = 0; i < users.length; i++) {
+                DisplayMessage("userList", users[i], "black", "")
+            }
+        });
+
+        $("#sendMessage").on("click", function () {
+            sendMessages();
+        });
+
+        //-----------------------------
+
+        //-----------Common Methods-------------
+        function sendMessages() {
+            var message = $("#textMessage").val();
+            var user = $(".userName").text();
+            connection.invoke("SendMessage", user, message);
+        }
+
+        function DisplayMessage(id, textcontent, textColor, style) {
+            var list = $("#" + id);
+            var li = document.createElement("li");
+            li.textContent = textcontent;
+            li.style = "list-style:none; color:" + textColor + ";" + style;
+            list.append(li);
+        }
+        //-----------------------------
+
+        //------Send With Enter Key--------
+        $('html').keydown(function (e) {
+            if (e.which == 13) {
+                sendMessages();
+            }
+        });
+        //-----------------------------
+
         //-----ekranda height değişmelerini istediğim gibi ayarlamak için yazdığım script
         jQuery(window).bind("resize", function () {
             var height = $(window).height();
@@ -41,34 +100,15 @@
         height = height * 60 / 100;
         $(".chatRoom").height(height);
         //---------------------------------------------
-
-        var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
-        connection.start();
-        $("#sendMessage").on("click", function () {
-            sendMessages();
-        });
-        connection.on("ReceiveMessage", function (user, message) {
-            $("#textMessage").val("");
-            var textcontent = user + ": " + message;
-            var list = $("#messagesList");
-            var li = document.createElement("li");
-            li.textContent = textcontent;
-            li.style = "list-style:none";
-            list.append(li);
-        });
-
-
-        $('html').keydown(function (e) {
-            if (e.which == 13) {
-                sendMessages();
-            }
-        });
-        function sendMessages() {
-            var message = $("#textMessage").val();
-            var user = $(".userName").text();
-            connection.invoke("SendMessage", user, message);
+        function StartConnection() {
+            var userName = $(".userName").text();
+            connection.invoke("StartConnection", userName, "Deneme");
         }
-        var messageBody = document.querySelector('#messageBody');
-        messageBody.scrollTop = messageBody.scrollHeight - messageBody.clientHeight;
+        function StopConnection() {
+            var userName = $(".userName").text();
+            connection.invoke("StopConnection", userName, "Deneme");
+        }
+
     });
+
 </script>
